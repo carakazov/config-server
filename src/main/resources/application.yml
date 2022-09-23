@@ -1,0 +1,10 @@
+server:
+  port: 7777
+spring:
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/properties/innerDit, classpath:/properties/test, classpath:/properties/file-system
+  profiles:
+    active: native
