@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://${DB_URL:localhost}:${DB_PORT:5432}/${DB_NAME:registration_service}
+    username: ${DB_USER:registration_service_user}
+    password: 1q2w3e
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:/changelog/master.xml
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${DB_KAFKA_HOST:localhost}
+          defaultBrokerPort: 9092
+          replication-factor: 1
+      bindings:
+        registered-clients-topic:
+          destination: additional.info.topic
+          group: registration.ms.group
+        restore-password-topic:
+          destination: restore.password.topic
+          group: registration.ms.group
+
+
+
+application:
+  errorMessages:
+    internalError: internal error
+    wrongRequestParameters: wrong request parameters
+    wrongAccessTokenValidity: Access token validity should be less than 10000 and more than 10.
+    wrongRefreshTokenValidity: Refresh token validity shoul be less than 10000 and more than 10.
+    refreshValidityShouldBeMoreThanAccessValidity: Refresh validity can not be less than access validity.
+    clientAlreadyExists: Client already exists. Try another clientId.
+    requestedResourceNotFound: Requested resource not found.
+    roleAlreadyExists: Such role already exists in your service. Try another one.
+    reservedRoleTitle: Role titles OAUTH_CLIENT and OAUTH_ADMIN are reserved. You can not use them.
+    additionalInfoSendingException: Excpetion while additional info sending.
+    anonRegistrationNotEnabled: Anon registration for this system not enabled.
+    usernameAlreadyExists: Username already exists.
+    dateOfBirthInFuture: Date of birth in future.
+    serviceClientNotFound: Service client not found.
+    sameRoleInBothLists: Same role can not be in both lists.
+    notHaveResource: User does not have role from list.
+    alreadyHaveResource: User already has one of theese roles.
+    passowrdAreEqual: New password can not be equal to old one.
+    incorrectOldPassowrd: Incorrect old password.
+    restorePasswordRequestSendingException: Exception while sending request to restore password.
+    wrongPasswordExternalId: System does not contain client with such external id.
+    restoreCodeAlreadyUsed: Restore code already used.
+
+  maxAccessTokenValidity: ${MAX_ACCESS_TOKEN_VALIDITY:10000}
+  minAccessTokenValidity: ${MIN_ACCESS_TOKEN_VALIDITY:10}
+  maxRefreshTokenValidity: ${MAX_REFRESH_TOKEN_VALIDITY:10000}
+  minRefreshTokenValidity: ${MIN_REFRESH_TOKEN_VALIDITY:10}
