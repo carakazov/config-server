@@ -5,6 +5,6 @@ spring:
     config:
       server:
         native:
-          search-locations: classpath:/properties/innerDit, classpath:/properties/test, classpath:/properties/file-system
+          search-locations: classpath:/properties
   profiles:
     active: native
