@@ -1,0 +1,77 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: project.notes.restore@gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${OAUTH_HOST:localhost}:${OAUTH_PORT:8080}/.well-known/jwks.json
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://${DB_URL:localhost}:5432/${DB_NAME:user_data_system}
+    username: ${DB_USER:user_data_system_user}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:/changelog/master.xml
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  cloud:
+    stream:
+      function:
+        definition:
+          newUserListener;restorePasswordListener
+      kafka:
+        binder:
+          brokers: ${KAFKA_HOST:localhost}
+          defaultBrokerPort: 9092
+          replication-factor: 1
+      bindings:
+        newUserListener-in-0:
+          destination: additional.info.topic
+          group: user.data.ms.group
+          consumer:
+            concurrency: 10
+            max-attempts: 1
+        restorePasswordListener-in-0:
+          destination: restore.password.topic
+          group: user.data.ms.group
+          consumer:
+            concurrency: 10
+            max-attempts: 1
+
+application:
+  errorMessages:
+    internalError: internal error
+    wrongRequestParameters: wrong request parameters
+    resourceNotFount: Requested resource not found.
+    emailAlreadyInUse: This email already in use.
+    unrecognizedTypes: Client does not have one of the types.
+  restorePasswordMessage: Для подтверждения нового пароля перейдите по ссылке http://${OAUTH_HOST:localhost}:${OAUTH_PORT:8080}/client/{restoreCode}/{clientExternalId}
+  sender: project.notes.restore@gmail.com
+  topic: Password restoring
+
+
+#keycloak:
+#  auth-server-url: #FIXME
+#  realm: #FIXME
+#  resource:#FIXME
+#  bearer-only: true
+#  security-constraints:
+#    - authRoles:
+#        - uma_authorization
+#      securityCollections:
+#        - patterns:
+#            - /cluster/*
+#            - /directory/*
+#            - /file/*
+#            - /recreate/*

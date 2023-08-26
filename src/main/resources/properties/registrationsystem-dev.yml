@@ -3,7 +3,6 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://${DB_URL:localhost}:${DB_PORT:5432}/${DB_NAME:registration_service}
     username: ${DB_USER:registration_service_user}
-    password: 1q2w3e
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
